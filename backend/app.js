@@ -17,23 +17,31 @@ require('dotenv/config');
 
 const api = process.env.API_URL;
 
-//* get request response
-app.get(`${api}/products`, (req, res) =>{
-    const product = {
-        id: 1,
-        name: 'hair dresser',
-        image: 'some_url',
-    }
 
-    res.send(product);
+const Product = require('../models/user');
+
+//* get request response
+app.get(`${api}/users`, async (req, res) =>{
+    const userList = await User.find();
+    res.send(userList);
 })
 
 
 //* post request response
-app.post(`${api}/products`, (req, res) =>{
-    const newProduct = req.body;
-    console.log(newProduct);
-    res.send(newProduct);
+app.post(`${api}/users`, (req, res) =>{
+    const user = new User({
+        id: req.body.id,
+        name: req.body.name,
+        
+    });
+    user.save().then((createdUser => {
+        res.status(201).json(createdUser)
+    })).catch((err)=>{
+        res.status(500).json({
+            error: err,
+            success: false
+        })
+    })
 })
 
 
