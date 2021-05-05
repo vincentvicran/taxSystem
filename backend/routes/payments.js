@@ -12,10 +12,14 @@ router.get(`/`, async (req, res) =>{
 //* post request response
 router.post(`/`, (req, res) =>{
     const payment = new Payment({
-        id: req.body.id,
-        name: req.body.name,
-        
+        paymentId: req.body.paymentId,
+        userId: req.body.userId,
+        bookId: req.body.bookId,
+        paymentAmount: req.body.paymentAmount,
+        voucherImage: req.body.voucherImage,
+        paymentDate: req.body.paymentDate
     });
+    
     payment.save().then((createdPayment => {
         res.status(201).json(createdPayment)
     })).catch((err)=>{

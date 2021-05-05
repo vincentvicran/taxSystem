@@ -1,9 +1,20 @@
 const mongoose = require('mongoose');
 
 const insuranceSchema = mongoose.Schema({
-    id: String,
-    name: {
+    insuranceId: String,
+
+    insuranceType: {
         type: String,
+        required: true
+    },
+
+    insuranceDOI: {
+        type: Date,
+        required: true
+    },
+
+    insuranceDOE: {
+        type: Date,
         required: true
     }
 
