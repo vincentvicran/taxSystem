@@ -3,28 +3,21 @@ const app = express();
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
+const cors = require('cors');
 
-//* environment variables
+//* environment variables 
 require('dotenv/config');
 
 const api = process.env.API_URL;
 
-
+app.use(cors());
+app.options('*', cors());
 
 //* middleware
 app.use(bodyParser.json());
 
 //* HTTP loggers details
 app.use(morgan('tiny'));
-
-
-
-// //* importing models
-// const User = require('./models/user');
-// const Permission = require('./models/permission');
-// const Vehicle = require('./models/vehicle');
-// const Payment = require('./models/payment');
-// const Insurance = require('./models/insurance');
 
 
 

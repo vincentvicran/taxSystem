@@ -12,9 +12,10 @@ router.get(`/`, async (req, res) =>{
 //* post request response
 router.post(`/`, (req, res) =>{
     const insurance = new Insurance({
-        id: req.body.id,
-        name: req.body.name,
-        
+        insuranceId: req.body.insuranceId,
+        insuranceType: req.body.insuranceType,
+        insuranceDOI: req.body.insuranceDOI,
+        insuranceDOE: req.body.insuranceDOE        
     });
     insurance.save().then((createdInsurance => {
         res.status(201).json(createdInsurance)
@@ -24,6 +25,28 @@ router.post(`/`, (req, res) =>{
             success: false
         })
     })
+})
+
+
+//* update
+router.put(`/:id`, async (req, res)=>{
+    const insurance = await Insurance.findByIdAndUpdate(
+        req.params.id,
+        {
+            insuranceId: req.body.insuranceId,
+            insuranceType: req.body.insuranceType,
+            insuranceDOI: req.body.insuranceDOI,
+            insuranceDOE: req.body.insuranceDOE 
+        },
+        {
+            new: true
+        }
+    );
+
+    if(!insurance)
+        return res.status(404).send('The insurance cannot be created!');
+
+    res.send(insurance); 
 })
 
 module.exports = router;

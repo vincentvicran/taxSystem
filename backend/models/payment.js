@@ -1,9 +1,35 @@
 const mongoose = require('mongoose');
 
 const paymentSchema = mongoose.Schema({
-    id: String,
-    name: {
+    paymentId: {
         type: String,
+        unique: true,
+        required: true
+    },
+
+    userId: {
+        type: String,
+        required: true
+    },
+
+    bookId: {
+        type: String,
+        required: true
+    },
+
+    paymentAmount: {
+        type: String,
+        required: true
+    },
+
+    voucherImage: {
+        type: String,
+        required: true
+    },
+
+    paymentDate: {
+        type: Date,
+        default: Date.now,
         required: true
     }
 
