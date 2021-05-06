@@ -58,7 +58,8 @@ router.post('/login', async (req, res) => {
     if(user && bcrypt.compareSync(req.body.userPassword, user.userPassword)) {
         const token = jwt.sign(
             {
-                userId: user.id
+                userId: user.id,
+                isAdmin: user.isAdmin
             },
             secret,
             {
@@ -70,6 +71,25 @@ router.post('/login', async (req, res) => {
     else {
         res.status(400).send('Wrong password!');
     }
+})
+
+
+router.post('/register', async (req,res)=>{
+    let user = new User({
+        userName: req.body.userName,
+        userEmail: req.body.userEmail,
+        userDOB: req.body.userDOB,
+        userAddress: req.body.userAddress,
+        userContact: req.body.userContact,
+        userPassword: bcrypt.hashSync(req.body.userPassword, 07),
+        isAdmin: req.body.isAdmin
+    })
+    user = await user.save();
+
+    if(!user)
+    return res.status(400).send('The user cannot be created!')
+
+    res.send(user);
 })
 
 
