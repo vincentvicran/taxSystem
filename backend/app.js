@@ -5,10 +5,13 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
 
+
 //* environment variables 
 require('dotenv/config');
 
 const api = process.env.API_URL;
+var authJwt = require('./helpers/jwt');
+var errorHandler = require('./helpers/error-handler');
 
 app.use(cors());
 app.options('*', cors());
@@ -18,6 +21,8 @@ app.use(bodyParser.json());
 
 //* HTTP loggers details
 app.use(morgan('tiny'));
+app.use(authJwt());
+app.use(errorHandler);
 
 
 
