@@ -86,4 +86,15 @@ router.delete(`/:id`, (req, res) => {
     })
 })
 
+router.get(`/get/count`, async (req, res) =>{
+    const vehicleCount = await Vehicle.countDocuments((count) => count)
+
+    if(!vehicleCount) {
+        res.status(500).json({success: false});
+    } 
+    res.send({
+        vehicleCount: vehicleCount
+    });
+})
+
 module.exports = router;

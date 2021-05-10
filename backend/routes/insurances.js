@@ -49,4 +49,15 @@ router.put(`/:id`, async (req, res)=>{
     res.send(insurance); 
 })
 
+
+router.get(`/get/count`, async (req, res) =>{
+    const insuranceCount = await Insurance.countDocuments((count) => count)
+
+    if(!insuranceCount) {
+        res.status(500).json({success: false});
+    } 
+    res.send({
+        insuranceCount: insuranceCount
+    });
+})
 module.exports = router;

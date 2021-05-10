@@ -46,6 +46,7 @@ app.use(`${api}/insurances`, insurancesRoutes);
 mongoose.connect(process.env.CONNECTION_STRING, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    useCreateIndex: true,
     dbName: 'TaxDB'
 })
 .then(() => {
@@ -59,6 +60,5 @@ mongoose.connect(process.env.CONNECTION_STRING, {
 
 //* starting the server
 app.listen(5500, ()=> {
-    console.log(api);
-    console.log('server is running at http://localhost:5500');
+    console.log('Listening to http://localhost:5500');
 })
