@@ -30,4 +30,15 @@ router.post(`/`, (req, res) =>{
     })
 })
 
+router.get(`/get/count`, async (req, res) =>{
+    const paymentCount = await Payment.countDocuments((count) => count)
+
+    if(!paymentCount) {
+        res.status(500).json({success: false});
+    } 
+    res.send({
+        paymentCount: paymentCount
+    });
+})
+
 module.exports = router;
