@@ -29,7 +29,6 @@ const paymentSchema = mongoose.Schema({
 
     paymentDate: {
         type: Date,
-        default: Date.now,
         required: true
     }
 
