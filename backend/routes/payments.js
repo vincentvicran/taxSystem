@@ -1,4 +1,6 @@
 const {Payment} = require('../models/payment');
+const {User} = require('../models/user');
+const {Vehicle} = require('../models/vehicle');
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -33,8 +35,19 @@ const uploadOptions = multer({ storage: storage })
 
 //* get request response
 router.get(`/`, async (req, res) =>{
-    const paymentList = await Payment.find();
+    const paymentList = await Payment.find()
+        .populate('userName', 'userName')
+        .populate('ownerName', 'ownerName')
+        .populate('vehicleNumber', 'vehicleNumber');
     res.send(paymentList);
+})
+
+router.get(`/:id`, async (req, res) =>{
+    const payment = await Payment.findById(req.params.id)
+        .populate('userName', 'userName')
+        .populate('ownerName', 'ownerName')
+        .populate('vehicleNumber', 'vehicleNumber');
+    res.send(payment);
 })
 
 
@@ -46,19 +59,26 @@ router.post(`/`, uploadOptions.single('voucherImage'), async (req, res) =>{
 
     const fileName = file.filename
     const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+
+    const userName = (await User.findById(req.body.userName).populate('User').select('userName'));
+    const ownerName = (await Vehicle.findById(req.body.ownerName).populate('Vehicle').select('ownerName'));
+    const vehicleNumber = (await Vehicle.findById(req.body.vehicleNumber).populate('Vehicle').select('vehicleNumber'));
+
     let payment = new Payment({
         paymentId: req.body.paymentId,
-        userId: req.body.userId,
-        bookId: req.body.bookId,
+        userName: userName,
+        ownerName: ownerName,
+        vehicleNumber: vehicleNumber,
         paymentAmount: req.body.paymentAmount,
         voucherImage: `${basePath}${fileName}`,
         paymentDate: req.body.paymentDate
     });
 
+    
     payment = await payment.save();
 
     if(!payment) 
-    return res.status(500).send('The payment cannot be issued!')
+        return res.status(500).send('The payment cannot be issued!')
 
     res.send(payment);
 })

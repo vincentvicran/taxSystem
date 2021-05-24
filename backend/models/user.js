@@ -35,10 +35,10 @@ const userSchema = mongoose.Schema({
 
     isAdmin: {
         type: Boolean,
-        require: true,
+        required: true,
         default: false
     }
-});
+}, {timestamps: true});
 
 userSchema.virtual('id').get(function () {
     return this._id.toHexString();
