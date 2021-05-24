@@ -7,13 +7,21 @@ const paymentSchema = mongoose.Schema({
         required: true
     },
 
-    userId: {
-        type: String,
+    userName: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true
     },
 
-    bookId: {
-        type: String,
+    ownerName: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Vehicle',
+        required: true
+    },
+
+    vehicleNumber: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'Vehicle',
         required: true
     },
 
@@ -29,9 +37,10 @@ const paymentSchema = mongoose.Schema({
 
     paymentDate: {
         type: Date,
-        required: true
+        required: true,
+        default: Date.now
     }
 
-})
+}, {timestamps: true});
 
 exports.Payment = mongoose.model('Payment', paymentSchema);

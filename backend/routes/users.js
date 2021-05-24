@@ -24,7 +24,7 @@ router.get(`/:id`, async (req, res) => {
 
 
 //* post request response
-router.post(`/`, async (req, res) =>{
+router.post(`/admin`, async (req, res) =>{
     let user = new User({
         userName: req.body.userName,
         userEmail: req.body.userEmail,
@@ -48,7 +48,7 @@ router.post(`/`, async (req, res) =>{
 })
 
 router.post('/login', async (req, res) => {
-    const user = await User.findOne({userEmail: req.body.userEmail});
+    const user = await User.findOne({userEmail: req.body.userEmail})
     const secret = process.env.secret;
 
     if(!user) {

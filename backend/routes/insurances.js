@@ -1,19 +1,26 @@
 const {Insurance} = require('../models/insurance');
+const {Vehicle} = require('../models/vehicle');
 const express = require('express');
 const router = express.Router();
 
 //* get request response
 router.get(`/`, async (req, res) =>{
-    const insuranceList = await Insurance.find();
+    const insuranceList = await Insurance.find()
+        .populate('vehicleNumber', 'vehicleNumber');
     res.send(insuranceList);
 })
 
 
 //* post request response
 router.post(`/`, (req, res) =>{
+
+    const vehicleNumber = (await Vehicle.findById(req.body.vehicleNumber).populate('Vehicle').select('vehicleNumber'));
+
+
     const insurance = new Insurance({
         insuranceId: req.body.insuranceId,
         insuranceType: req.body.insuranceType,
+        vehicleNumber: vehicleNumber,
         insuranceDOI: req.body.insuranceDOI,
         insuranceDOE: req.body.insuranceDOE        
     });
@@ -35,6 +42,7 @@ router.put(`/:id`, async (req, res)=>{
         {
             insuranceId: req.body.insuranceId,
             insuranceType: req.body.insuranceType,
+            vehicleNumber: req.body.vehicleNumber,
             insuranceDOI: req.body.insuranceDOI,
             insuranceDOE: req.body.insuranceDOE 
         },
