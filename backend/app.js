@@ -28,14 +28,12 @@ app.use(errorHandler);
 
 //* importing routes
 const usersRoutes = require('./routes/users');
-const permissionsRoutes = require('./routes/permissions');
 const vehiclesRoutes = require('./routes/vehicles');
 const paymentsRoutes = require('./routes/payments');
 const insurancesRoutes = require('./routes/insurances');
 
 
 app.use(`${api}/users`, usersRoutes);
-app.use(`${api}/permissions`, permissionsRoutes);
 app.use(`${api}/vehicles`, vehiclesRoutes);
 app.use(`${api}/payments`, paymentsRoutes);
 app.use(`${api}/insurances`, insurancesRoutes);
