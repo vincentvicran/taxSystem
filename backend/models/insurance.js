@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const insuranceSchema = mongoose.Schema({
-    insuranceId: String,
+    insuranceId: Number,
 
     insuranceType: {
         type: String,
