@@ -1,41 +1,50 @@
 const express = require('express');
+
 const router = express.Router();
 
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 
-router
-    .post('/register', authController.userRegister);
+router.post('/register', authController.userRegister);
 
-router
-    .route('/login')
-    .post(userController.userLogIn);
+router.post('/login', authController.userLogin);
+
+router.post('/forgotpassword', authController.forgotPassword);
+router.patch('/resetpassword/:token', authController.resetPassword);
+router.patch(
+    '/updatepassword',
+    authController.protect,
+    authController.updatePassword
+);
 
 router
     .route('/')
-    .get(userController.getAllUsers);
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        userController.getAllUsers
+    );
 
 router
     .route('/:id')
-    .get(userController.getUser)
-    .put(userController.updateUser)
-    .delete(userController.deleteUser);
+    .get(authController.protect, userController.getUser)
+    .put(authController.protect, userController.updateUser)
+    .delete(authController.protect, userController.deleteUser);
 
 router
     .route('/admin')
-    .post(userController.addAdmin);
-
-// router
-//     .route('/login')
-//     .post(userController.userLogIn);
-
-// router
-//     .route('/register')
-//     .post(userController.userRegister);
+    .post(
+        authController.protect,
+        authController.restrictTo('admin'),
+        userController.addAdmin
+    );
 
 router
     .route('/get/count')
-    .get(userController.getUserCount);
-
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        userController.getUserCount
+    );
 
 module.exports = router;

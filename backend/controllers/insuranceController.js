@@ -1,35 +1,34 @@
-const {Insurance} = require('../models/insurance');
-const {Vehicle} = require('../models/vehicle');
+const { Insurance } = require('../models/insurance');
+const { Vehicle } = require('../models/vehicle');
+const catchAsync = require('../helpers/catchAsync');
+const AppError = require('../helpers/appError');
 
-
-exports.getAllInsurance = async (req, res) =>{
-    const insuranceList = await Insurance.find()
-        .populate('vehicleNumber', 'vehicleNumber');
+exports.getAllInsurance = catchAsync(async (req, res, next) => {
+    const insuranceList = await Insurance.find().populate(
+        'vehicleNumber',
+        'vehicleNumber'
+    );
     res.send(insuranceList);
-};
+});
 
-exports.addInsurance = async (req, res) =>{
-
-    const vehicleNumber = (await Vehicle.findById(req.body.vehicleNumber).populate('Vehicle').select('vehicleNumber'));
+exports.addInsurance = catchAsync(async (req, res, next) => {
+    const vehicleNumber = await Vehicle.findById(req.body.vehicleNumber)
+        .populate('Vehicle')
+        .select('vehicleNumber');
 
     const insurance = new Insurance({
         insuranceId: req.body.insuranceId,
         insuranceType: req.body.insuranceType,
         vehicleNumber: vehicleNumber,
         insuranceDOI: req.body.insuranceDOI,
-        insuranceDOE: req.body.insuranceDOE        
+        insuranceDOE: req.body.insuranceDOE,
     });
-    insurance.save().then((createdInsurance => {
-        res.status(201).json(createdInsurance)
-    })).catch((err)=>{
-        res.status(500).json({
-            error: err,
-            success: false
-        })
-    })
-};
+    insurance.save().then((createdInsurance) => {
+        res.status(201).json(createdInsurance);
+    });
+});
 
-exports.updateInsurance = async (req, res)=>{
+exports.updateInsurance = catchAsync(async (req, res, next) => {
     const insurance = await Insurance.findByIdAndUpdate(
         req.params.id,
         {
@@ -37,28 +36,26 @@ exports.updateInsurance = async (req, res)=>{
             insuranceType: req.body.insuranceType,
             vehicleNumber: req.body.vehicleNumber,
             insuranceDOI: req.body.insuranceDOI,
-            insuranceDOE: req.body.insuranceDOE 
+            insuranceDOE: req.body.insuranceDOE,
         },
         {
-            new: true
+            new: true,
         }
     );
 
-    if(!insurance)
-        return res.status(404).send('The insurance cannot be created!');
+    if (!insurance)
+        return next(new AppError('The insurance cannot be created!', 404));
 
-    res.send(insurance); 
-};
+    res.send(insurance);
+});
 
+exports.getInsuranceCount = catchAsync(async (req, res, next) => {
+    const insuranceCount = await Insurance.countDocuments((count) => count);
 
-exports.getInsuranceCount = async (req, res) =>{
-    const insuranceCount = await Insurance.countDocuments((count) => count)
-
-    if(!insuranceCount) {
-        res.status(500).json({success: false});
-
-    } 
+    if (!insuranceCount) {
+        res.status(500).json({ success: false });
+    }
     res.send({
-        insuranceCount: insuranceCount
+        insuranceCount: insuranceCount,
     });
-};
+});
