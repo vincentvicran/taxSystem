@@ -22,4 +22,6 @@ const insuranceSchema = mongoose.Schema(
     { timestamps: true }
 );
 
-exports.Insurance = mongoose.model('Insurance', insuranceSchema);
+const Insurance = mongoose.model('Insurance', insuranceSchema);
+
+module.exports = Insurance;

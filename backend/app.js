@@ -3,6 +3,10 @@ const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
 
 const app = express();
 
@@ -10,6 +14,7 @@ const app = express();
 require('dotenv/config');
 
 const api = process.env.API_URL;
+const port = process.env.PORT;
 // var authJwt = require('./helpers/jwt');
 // var errorHandler = require('./helpers/error-handler');
 const AppError = require('./helpers/appError');
@@ -18,15 +23,35 @@ const globalErrorHandler = require('./controllers/errorController');
 app.use(cors());
 app.options('*', cors());
 
-//* middleware
+//* GLOBAL MIDDLEWARE
+// reading data from the body into req.body
 app.use(bodyParser.json());
 
+// set security HTTP headers00
+app.use(helmet());
+
 //* HTTP loggers details
+// development logging
 if (process.env.NODE_ENV === 'development') {
     app.use(morgan('dev'));
 }
-// app.use(authJwt());
-// app.use(errorHandler);
+
+// limiting request from same API
+const limiter = rateLimit({
+    max: 100,
+    windowMs: 60 * 60 * 1000,
+    message: 'Request limit reached! Please try again in an hour!',
+});
+app.use('/api', limiter);
+
+//? serving static files
+app.use(express.static(`${__dirname}/public`));
+
+//? data sanitization against NoSQL query injection
+app.use(mongoSanitize());
+
+//? data sanitization against XSS
+app.use(xss());
 
 //* importing routes
 const usersRoutes = require('./routes/users');
@@ -41,12 +66,7 @@ app.use(`${api}/insurances`, insurancesRoutes);
 
 //* error handling
 app.all('*', (req, res, next) => {
-    next(
-        new AppError(
-            `Can't find ${req.originalUrl} on this server!`,
-            404
-        )
-    );
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
 });
 
 app.use(globalErrorHandler);
@@ -67,6 +87,6 @@ mongoose
     });
 
 //* starting the server
-app.listen(5500, () => {
-    console.log('Listening to http://localhost:5500');
+app.listen(port, () => {
+    console.log(`Listening to http://localhost:${port}`);
 });

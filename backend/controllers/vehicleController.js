@@ -1,4 +1,4 @@
-const { Vehicle } = require('../models/vehicle');
+const Vehicle = require('../models/vehicle');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
@@ -19,7 +19,6 @@ exports.getVehicle = catchAsync(async (req, res, next) => {
 
 exports.addVehicle = catchAsync(async (req, res, next) => {
     let vehicle = new Vehicle({
-        vehicleId: req.body.vehicleId,
         ownerName: req.body.ownerName,
         vehicleRegistrationDate: req.body.vehicleRegistrationDate,
         vehicleType: req.body.vehicleType,
@@ -41,7 +40,6 @@ exports.updateVehicle = catchAsync(async (req, res, next) => {
     const vehicle = await Vehicle.findByIdAndUpdate(
         req.params.id,
         {
-            vehicleId: req.body.vehicleId,
             ownerName: req.body.ownerName,
             vehicleRegistrationDate: req.body.vehicleRegistrationDate,
             vehicleType: req.body.vehicleType,
@@ -76,8 +74,9 @@ exports.getVehicleCount = catchAsync(async (req, res, next) => {
     const vehicleCount = await Vehicle.countDocuments((count) => count);
 
     if (!vehicleCount) {
-        res.status(500).json({ success: false });
+        return next(new AppError('No vehicle found!', 500));
     }
+
     res.send({
         vehicleCount: vehicleCount,
     });

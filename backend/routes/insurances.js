@@ -1,23 +1,29 @@
 const express = require('express');
+
 const router = express.Router();
 
 const insuranceController = require('../controllers/insuranceController');
-
+const authController = require('../controllers/authController');
 
 router
     .route(`/`)
-    .get(insuranceController.getAllInsurance)
-    .post(insuranceController.addInsurance);
-
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        insuranceController.getAllInsurance
+    )
+    .post(authController.protect, insuranceController.addInsurance);
 
 router
     .route('/:id')
-    .put(insuranceController.updateInsurance);
-
+    .put(authController.protect, insuranceController.updateInsurance);
 
 router
     .route(`/get/count`)
-    .get(insuranceController.getInsuranceCount);
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        insuranceController.getInsuranceCount
+    );
 
-    
 module.exports = router;

@@ -3,6 +3,14 @@ const AppError = require('../helpers/appError');
 const catchAsync = require('../helpers/catchAsync');
 const authController = require('./authController');
 
+const filterObj = (obj, ...allowedFields) => {
+    const newObj = {};
+    Object.keys(obj).forEach((el) => {
+        if (allowedFields.includes(el)) newObj[el] = obj[el];
+    });
+    return newObj;
+};
+
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const userList = await User.find();
     res.status(201).json({
@@ -25,7 +33,7 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 exports.addAdmin = catchAsync(async (req, res, next) => {
-    const user = new User.Create({
+    const user = await User.Create({
         userName: req.body.userName,
         userEmail: req.body.userEmail,
         userDOB: req.body.userDOB,
@@ -40,6 +48,16 @@ exports.addAdmin = catchAsync(async (req, res, next) => {
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
+    //* 1. create error if user POSTs password data
+    if (req.body.userPassword) {
+        return next(
+            new AppError(
+                'This route is not for password updates. Please use /updatepassword.',
+                400
+            )
+        );
+    }
+
     const user = await User.findByIdAndUpdate(
         req.params.id,
         {
@@ -48,8 +66,6 @@ exports.updateUser = catchAsync(async (req, res, next) => {
             userDOB: req.body.userDOB,
             userAddress: req.body.userAddress,
             userContact: req.body.userContact,
-            userPassword: req.body.userPassword,
-            isAdmin: req.body.isAdmin,
         },
         {
             new: true,
@@ -61,6 +77,54 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     }
 
     res.send(user);
+});
+
+//! updating userfields by logged in user
+exports.updateMe = catchAsync(async (req, res, next) => {
+    //* 1. create error if user POSTs password data
+    if (req.body.userPassword) {
+        return next(
+            new AppError(
+                'This route is not for password updates. Please use /updatepassword.',
+                400
+            )
+        );
+    }
+
+    //* 2. update user document
+    const filteredBody = filterObj(
+        req.body,
+        'userName',
+        'userEmail',
+        'userContact'
+    );
+    const updatedUser = await User.findByIdAndUpdate(
+        req.user.id,
+        filteredBody,
+        {
+            new: true,
+            runValidators: true,
+        }
+    );
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user: updatedUser,
+        },
+    });
+});
+
+exports.deleteMe = catchAsync(async (req, res, next) => {
+    await User.findByIdAndUpdate(req.user.id, {
+        active: false,
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: null,
+        message: 'The user is deleted!',
+    });
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {

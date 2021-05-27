@@ -1,5 +1,5 @@
-const { Insurance } = require('../models/insurance');
-const { Vehicle } = require('../models/vehicle');
+const Insurance = require('../models/insurance');
+const Vehicle = require('../models/vehicle');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
@@ -8,6 +8,11 @@ exports.getAllInsurance = catchAsync(async (req, res, next) => {
         'vehicleNumber',
         'vehicleNumber'
     );
+
+    if (!insuranceList) {
+        return next(new AppError('No insurances found!', 404));
+    }
+
     res.send(insuranceList);
 });
 
@@ -17,7 +22,7 @@ exports.addInsurance = catchAsync(async (req, res, next) => {
         .select('vehicleNumber');
 
     const insurance = new Insurance({
-        insuranceId: req.body.insuranceId,
+        // insuranceId: req.body.insuranceId,
         insuranceType: req.body.insuranceType,
         vehicleNumber: vehicleNumber,
         insuranceDOI: req.body.insuranceDOI,
@@ -44,7 +49,7 @@ exports.updateInsurance = catchAsync(async (req, res, next) => {
     );
 
     if (!insurance)
-        return next(new AppError('The insurance cannot be created!', 404));
+        return next(new AppError('The insurance could not be updated!', 404));
 
     res.send(insurance);
 });
@@ -53,8 +58,9 @@ exports.getInsuranceCount = catchAsync(async (req, res, next) => {
     const insuranceCount = await Insurance.countDocuments((count) => count);
 
     if (!insuranceCount) {
-        res.status(500).json({ success: false });
+        return next(new AppError('No insurances found!', 500));
     }
+
     res.send({
         insuranceCount: insuranceCount,
     });

@@ -5,10 +5,9 @@ const router = express.Router();
 const userController = require('../controllers/userController');
 const authController = require('../controllers/authController');
 
+//! AUTHENTICATION
 router.post('/register', authController.userRegister);
-
 router.post('/login', authController.userLogin);
-
 router.post('/forgotpassword', authController.forgotPassword);
 router.patch('/resetpassword/:token', authController.resetPassword);
 router.patch(
@@ -17,6 +16,11 @@ router.patch(
     authController.updatePassword
 );
 
+//? UPDATING LOGGED IN USER INFO
+router.patch('/updateme', authController.protect, userController.updateMe);
+router.delete('/deleteme', authController.protect, userController.deleteMe);
+
+//! ADMIN PRIVILEDGES
 router
     .route('/')
     .get(
