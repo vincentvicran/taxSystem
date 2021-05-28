@@ -33,29 +33,28 @@ const storage = multer.diskStorage({
 
 const uploadOptions = multer({ storage: storage });
 
-//* get request response
-router.get(
-    `/`,
-    authController.protect,
-    authController.restrictTo('admin'),
-    paymentController.getAllPayments
-);
+router.use(authController.protect);
 
-router.get(`/:id`, authController.protect, paymentController.getPayment);
+router.route('/:id').get(paymentController.getPayment);
 
-//* post request response
 router.post(
     `/`,
     uploadOptions.single('voucherImage'),
-    authController.protect,
     paymentController.addPayment
 );
 
-router.get(
-    `/get/count`,
-    authController.protect,
-    authController.restrictTo('admin'),
-    paymentController.getPaymentCount
-);
+//! ADMIN PRIVILEDGES
+router.use(authController.restrictTo('admin'));
+
+router
+    .route(`/`)
+    .get(paymentController.getAllPayments)
+    .post(paymentController.createPayment);
+
+router
+    .route('/:id')
+    .post(uploadOptions.single('voucherImage'), paymentController.createPayment)
+    .patch(paymentController.updatePayment)
+    .delete(paymentController.deletePayment);
 
 module.exports = router;

@@ -5,6 +5,7 @@ const crypto = require('crypto');
 const User = require('../models/user');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
+// const factory = require('./handlerFactory');
 const sendEmail = require('../helpers/email');
 
 const signToken = (id) =>
@@ -232,3 +233,15 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     //* 4. log user in, send JWT
     createSendToken(user, 200, res);
 });
+
+exports.logout = (req, res) => {
+    res.cookie('jwt', 'loggedout', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true,
+    });
+
+    res.status(200).json({
+        status: 'success',
+        message: 'User successfully Logged out!',
+    });
+};

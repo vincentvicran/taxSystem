@@ -1,14 +1,23 @@
 const Vehicle = require('../models/vehicle');
+
+const factory = require('./handlerFactory');
+
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
 exports.getAllVehicles = catchAsync(async (req, res, next) => {
-    const vehicleList = await Vehicle.find();
+    const vehicleList = await Vehicle.find().populate({
+        path: 'uploadedBy',
+        select: 'userName',
+    });
     res.send(vehicleList);
 });
 
 exports.getVehicle = catchAsync(async (req, res, next) => {
-    const vehicle = await Vehicle.findById(req.params.id);
+    const vehicle = await Vehicle.findById(req.params.id).populate(
+        'uploadedBy',
+        'userName'
+    );
 
     if (!vehicle) {
         return next(new AppError('No vehicle found with that ID', 404));
@@ -25,6 +34,7 @@ exports.addVehicle = catchAsync(async (req, res, next) => {
         vehicleNumber: req.body.vehicleNumber,
         engineCapacity: req.body.engineCapacity,
         latestPaymentDate: req.body.latestPaymentDate,
+        uploadedBy: req.user.id,
     });
 
     vehicle = await vehicle.save();
@@ -46,6 +56,7 @@ exports.updateVehicle = catchAsync(async (req, res, next) => {
             vehicleNumber: req.body.vehicleNumber,
             engineCapacity: req.body.engineCapacity,
             latestPaymentDate: req.body.latestPaymentDate,
+            // uploadedBy: req.user.id,
         },
         {
             new: true,
@@ -59,25 +70,18 @@ exports.updateVehicle = catchAsync(async (req, res, next) => {
     res.send(vehicle);
 });
 
-exports.deleteVehicle = catchAsync(async (req, res, next) => {
-    const vehicle = await Vehicle.findByIdAndRemove(req.params.id);
-    if (!vehicle) {
-        return next(new AppError('No vehicle found with that ID', 404));
-    }
-    res.status(200).json({
-        success: true,
-        message: 'The vehicle is deleted!',
-    });
-});
+exports.createVehicle = factory.createOne(Vehicle);
 
-exports.getVehicleCount = catchAsync(async (req, res, next) => {
-    const vehicleCount = await Vehicle.countDocuments((count) => count);
+exports.updateVehicles = factory.updateOne(Vehicle);
 
-    if (!vehicleCount) {
-        return next(new AppError('No vehicle found!', 500));
-    }
-
-    res.send({
-        vehicleCount: vehicleCount,
-    });
-});
+exports.deleteVehicle = factory.deleteOne(Vehicle);
+// exports.deleteVehicle = catchAsync(async (req, res, next) => {
+//     const vehicle = await Vehicle.findByIdAndRemove(req.params.id);
+//     if (!vehicle) {
+//         return next(new AppError('No vehicle found with that ID', 404));
+//     }
+//     res.status(200).json({
+//         success: true,
+//         message: 'The vehicle is deleted!',
+//     });
+// });

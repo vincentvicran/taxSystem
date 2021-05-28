@@ -2,19 +2,13 @@ const mongoose = require('mongoose');
 
 const paymentSchema = mongoose.Schema(
     {
-        userName: {
+        payor: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'User',
             required: true,
         },
 
-        ownerName: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Vehicle',
-            required: true,
-        },
-
-        vehicleNumber: {
+        vehicle: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Vehicle',
             required: true,

@@ -5,25 +5,20 @@ const router = express.Router();
 const insuranceController = require('../controllers/insuranceController');
 const authController = require('../controllers/authController');
 
-router
-    .route(`/`)
-    .get(
-        authController.protect,
-        authController.restrictTo('admin'),
-        insuranceController.getAllInsurance
-    )
-    .post(authController.protect, insuranceController.addInsurance);
+router.use(authController.protect);
+
+router.route(`/`).post(insuranceController.addInsurance);
+
+router.route(`/:userId`).get(insuranceController.getUserInsurance);
+
+//! ADMIN PRIVILEDGES
+router.use(authController.restrictTo('admin'));
+
+router.route(`/`).get(insuranceController.getAllInsurance);
 
 router
     .route('/:id')
-    .put(authController.protect, insuranceController.updateInsurance);
-
-router
-    .route(`/get/count`)
-    .get(
-        authController.protect,
-        authController.restrictTo('admin'),
-        insuranceController.getInsuranceCount
-    );
+    .patch(insuranceController.updateInsurance)
+    .delete(insuranceController.deleteInsurance);
 
 module.exports = router;

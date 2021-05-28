@@ -2,10 +2,18 @@ const mongoose = require('mongoose');
 
 const insuranceSchema = mongoose.Schema(
     {
-        insuranceId: Number,
+        // insuranceId: Number,
 
         insuranceType: {
             type: String,
+            required: true,
+            enum: ['Third Party', 'Full Insurance'],
+            default: 'Third Party',
+        },
+
+        payor: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'User',
             required: true,
         },
 
@@ -16,6 +24,12 @@ const insuranceSchema = mongoose.Schema(
 
         insuranceDOE: {
             type: Date,
+            required: true,
+        },
+
+        vehicle: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Vehicle',
             required: true,
         },
     },

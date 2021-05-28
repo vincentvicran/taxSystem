@@ -1,6 +1,7 @@
 const User = require('../models/user');
 const AppError = require('../helpers/appError');
 const catchAsync = require('../helpers/catchAsync');
+const factory = require('./handlerFactory');
 const authController = require('./authController');
 
 const filterObj = (obj, ...allowedFields) => {
@@ -115,6 +116,16 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     });
 });
 
+exports.getMe = catchAsync(async (req, res, next) => {
+    await User.findByIdAndUpdate(req.user.id);
+
+    res.status(200).json({
+        status: 'success',
+        data: null,
+        message: 'The user is deleted!',
+    });
+});
+
 exports.deleteMe = catchAsync(async (req, res, next) => {
     await User.findByIdAndUpdate(req.user.id, {
         active: false,
@@ -127,23 +138,18 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
     });
 });
 
-exports.deleteUser = catchAsync(async (req, res, next) => {
-    const user = await User.findByIdAndRemove(req.params.id);
+exports.createUser = factory.createOne(User);
 
-    if (!user) {
-        return next(new AppError('No user found with that ID', 404));
-    }
+exports.updateUsers = factory.createOne(User);
 
-    res.status(200).json({ success: true, message: 'The User is deleted!' });
-});
+exports.deleteUser = factory.deleteOne(User);
 
-exports.getUserCount = catchAsync(async (req, res, next) => {
-    const userCount = await User.countDocuments((count) => count);
+// exports.deleteUser = catchAsync(async (req, res, next) => {
+//     const user = await User.findByIdAndRemove(req.params.id);
 
-    if (!userCount) {
-        res.status(500).json({ success: false });
-    }
-    res.send({
-        userCount: userCount,
-    });
-});
+//     if (!user) {
+//         return next(new AppError('No user found with that ID', 404));
+//     }
+
+//     res.status(200).json({ success: true, message: 'The User is deleted!' });
+// });

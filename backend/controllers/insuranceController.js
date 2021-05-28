@@ -1,13 +1,43 @@
 const Insurance = require('../models/insurance');
-const Vehicle = require('../models/vehicle');
 const catchAsync = require('../helpers/catchAsync');
+const factory = require('./handlerFactory');
 const AppError = require('../helpers/appError');
 
 exports.getAllInsurance = catchAsync(async (req, res, next) => {
-    const insuranceList = await Insurance.find().populate(
-        'vehicleNumber',
-        'vehicleNumber'
-    );
+    const insuranceList = await Insurance.find()
+        .populate('payor', 'userName')
+        .populate('vehicle', 'vehicleNumber');
+
+    if (!insuranceList) {
+        return next(new AppError('No insurances found!', 404));
+    }
+
+    res.send(insuranceList);
+});
+
+exports.getUserInsurances = catchAsync(async (req, res, next) => {
+    //* allow nested routes
+    if (!req.body.vehicle) req.body.vehicle = req.params.vehicleId;
+    if (!req.body.user) req.body.user = req.user.id;
+
+    const insuranceList = await Insurance.find()
+        .populate('payor', 'userName')
+        .populate('vehicle', 'vehicleNumber');
+
+    if (!insuranceList) {
+        return next(new AppError('No insurances found!', 404));
+    }
+
+    res.send(insuranceList);
+});
+
+exports.getUserInsurance = catchAsync(async (req, res, next) => {
+    //* allow nested routes
+    if (!req.body.user) req.body.user = req.user.id;
+
+    const insuranceList = await Insurance.findById(req.params.userId)
+        .populate('payor', 'userName')
+        .populate('vehicle', 'vehicleNumber');
 
     if (!insuranceList) {
         return next(new AppError('No insurances found!', 404));
@@ -17,51 +47,22 @@ exports.getAllInsurance = catchAsync(async (req, res, next) => {
 });
 
 exports.addInsurance = catchAsync(async (req, res, next) => {
-    const vehicleNumber = await Vehicle.findById(req.body.vehicleNumber)
-        .populate('Vehicle')
-        .select('vehicleNumber');
-
-    const insurance = new Insurance({
-        // insuranceId: req.body.insuranceId,
+    const insurance = await Insurance.create({
         insuranceType: req.body.insuranceType,
-        vehicleNumber: vehicleNumber,
+        payor: req.user.id,
+        vehicle: req.body.vehicle,
         insuranceDOI: req.body.insuranceDOI,
         insuranceDOE: req.body.insuranceDOE,
     });
-    insurance.save().then((createdInsurance) => {
-        res.status(201).json(createdInsurance);
-    });
-});
-
-exports.updateInsurance = catchAsync(async (req, res, next) => {
-    const insurance = await Insurance.findByIdAndUpdate(
-        req.params.id,
-        {
-            // insuranceId: req.body.insuranceId,
-            insuranceType: req.body.insuranceType,
-            vehicleNumber: req.body.vehicleNumber,
-            insuranceDOI: req.body.insuranceDOI,
-            insuranceDOE: req.body.insuranceDOE,
-        },
-        {
-            new: true,
-        }
-    );
-
-    if (!insurance)
-        return next(new AppError('The insurance could not be updated!', 404));
+    if (!insurance) {
+        return next(new AppError('No insurances found!', 404));
+    }
 
     res.send(insurance);
 });
 
-exports.getInsuranceCount = catchAsync(async (req, res, next) => {
-    const insuranceCount = await Insurance.countDocuments((count) => count);
+exports.createInsurance = factory.createOne(Insurance);
 
-    if (!insuranceCount) {
-        return next(new AppError('No insurances found!', 500));
-    }
+exports.updateInsurance = factory.updateOne(Insurance);
 
-    res.send({
-        insuranceCount: insuranceCount,
-    });
-});
+exports.deleteInsurance = factory.deleteOne(Insurance);

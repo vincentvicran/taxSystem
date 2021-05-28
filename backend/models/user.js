@@ -77,13 +77,13 @@ const userSchema = mongoose.Schema(
     { timestamps: true }
 );
 
-userSchema.virtual('id').get(function () {
-    return this._id.toHexString();
-});
+// userSchema.virtual('id').get(function () {
+//     return this._id.toHexString();
+// });
 
-userSchema.set('toJSON', {
-    virtuals: true,
-});
+// userSchema.set('toJSON', {
+//     virtuals: true,
+// });
 
 userSchema.pre('save', async function (next) {
     //only run this function if password actually gets modified

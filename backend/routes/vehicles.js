@@ -4,32 +4,31 @@ const router = express.Router();
 
 const vehicleController = require('../controllers/vehicleController');
 const authController = require('../controllers/authController');
+// const insuranceController = require('../controllers/insuranceController');
 
-router
-    .route('/')
-    .get(
-        authController.protect,
-        authController.restrictTo('admin'),
-        vehicleController.getAllVehicles
-    )
-    .post(authController.protect, vehicleController.addVehicle);
+router.use(authController.protect);
+
+router.route('/').post(vehicleController.addVehicle);
 
 router
     .route('/:id')
-    .get(authController.protect, vehicleController.getVehicle)
-    .put(authController.protect, vehicleController.updateVehicle)
-    .delete(
-        authController.protect,
-        authController.restrictTo('admin'),
-        vehicleController.deleteVehicle
-    );
+    .get(vehicleController.getVehicle)
+    .patch(vehicleController.updateVehicle);
+
+//! ADMIN PRIVILEDGES
+router.use(authController.restrictTo('admin'));
 
 router
-    .route('/get/count')
-    .get(
-        authController.protect,
-        authController.restrictTo('admin'),
-        vehicleController.getVehicleCount
-    );
+    .route('/')
+    .get(vehicleController.getAllVehicles)
+    .post(vehicleController.createVehicle);
+router
+    .route('/:id')
+    .patch(vehicleController.updateVehicles)
+    .delete(vehicleController.deleteVehicle);
+
+// router
+//     .route(`/:vehicleId/insurances`)
+//     .get(authController.protect, insuranceController.getVehicleInsurances);
 
 module.exports = router;

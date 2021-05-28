@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+// const Insurance = require('./insurance');
 
 const vehicleSchema = mongoose.Schema(
     {
@@ -35,9 +36,27 @@ const vehicleSchema = mongoose.Schema(
             type: Date,
             required: true,
         },
+
+        uploadedBy: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+
+        // insurance: Array,
     },
     { timestamps: true }
 );
+
+// vehicleSchema.pre('save', async function (next) {
+//     const insurancePromise = this.insurance.map(
+//         async (id) => await Insurance.findById(id)
+//     );
+
+//     this.insurance = await Promise.all(insurancePromise);
+
+//     next();
+// });
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 
