@@ -58,11 +58,13 @@ const usersRoutes = require('./routes/users');
 const vehiclesRoutes = require('./routes/vehicles');
 const paymentsRoutes = require('./routes/payments');
 const insurancesRoutes = require('./routes/insurances');
+const adminRoutes = require('./routes/admin');
 
 app.use(`${api}/users`, usersRoutes);
 app.use(`${api}/vehicles`, vehiclesRoutes);
 app.use(`${api}/payments`, paymentsRoutes);
 app.use(`${api}/insurances`, insurancesRoutes);
+app.use(`${api}/admin`, adminRoutes);
 
 //* error handling
 app.all('*', (req, res, next) => {

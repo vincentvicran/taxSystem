@@ -4,6 +4,21 @@ const Payment = require('../models/payment');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
+exports.getAllUserPayments = catchAsync(async (req, res, next) => {
+    const paymentList = await Payment.find({ payor: req.user.id })
+        .populate('payor', 'userName')
+        .populate({
+            path: 'vehicle',
+            select: 'ownerName',
+        });
+
+    if (!paymentList) {
+        return next(new AppError('No payments found!', 404));
+    }
+
+    res.send(paymentList);
+});
+
 exports.getAllPayments = catchAsync(async (req, res, next) => {
     const paymentList = await Payment.find()
         .populate('payor', 'userName')
@@ -43,7 +58,7 @@ exports.addPayment = catchAsync(async (req, res, next) => {
 
     let payment = new Payment({
         payor: req.user.id,
-        vehicle: req.body.vehicle,
+        vehicle: req.params.vehicleId,
         paymentAmount: req.body.paymentAmount,
         voucherImage: `${basePath}${fileName}`,
         paymentDate: req.body.paymentDate,
@@ -57,8 +72,6 @@ exports.addPayment = catchAsync(async (req, res, next) => {
 
     res.send(payment);
 });
-
-exports.createPayment = factory.createOne(Payment);
 
 exports.updatePayment = factory.updateOne(Payment);
 

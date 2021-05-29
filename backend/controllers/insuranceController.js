@@ -3,8 +3,8 @@ const catchAsync = require('../helpers/catchAsync');
 const factory = require('./handlerFactory');
 const AppError = require('../helpers/appError');
 
-exports.getAllInsurance = catchAsync(async (req, res, next) => {
-    const insuranceList = await Insurance.find()
+exports.getAllUserInsurance = catchAsync(async (req, res, next) => {
+    const insuranceList = await Insurance.find({ payor: req.user.id })
         .populate('payor', 'userName')
         .populate('vehicle', 'vehicleNumber');
 
@@ -15,11 +15,7 @@ exports.getAllInsurance = catchAsync(async (req, res, next) => {
     res.send(insuranceList);
 });
 
-exports.getUserInsurances = catchAsync(async (req, res, next) => {
-    //* allow nested routes
-    if (!req.body.vehicle) req.body.vehicle = req.params.vehicleId;
-    if (!req.body.user) req.body.user = req.user.id;
-
+exports.getAllInsurance = catchAsync(async (req, res, next) => {
     const insuranceList = await Insurance.find()
         .populate('payor', 'userName')
         .populate('vehicle', 'vehicleNumber');
@@ -33,9 +29,8 @@ exports.getUserInsurances = catchAsync(async (req, res, next) => {
 
 exports.getUserInsurance = catchAsync(async (req, res, next) => {
     //* allow nested routes
-    if (!req.body.user) req.body.user = req.user.id;
 
-    const insuranceList = await Insurance.findById(req.params.userId)
+    const insuranceList = await Insurance.findById(req.params.id)
         .populate('payor', 'userName')
         .populate('vehicle', 'vehicleNumber');
 
@@ -50,7 +45,7 @@ exports.addInsurance = catchAsync(async (req, res, next) => {
     const insurance = await Insurance.create({
         insuranceType: req.body.insuranceType,
         payor: req.user.id,
-        vehicle: req.body.vehicle,
+        vehicle: req.params.vehicleId,
         insuranceDOI: req.body.insuranceDOI,
         insuranceDOE: req.body.insuranceDOE,
     });

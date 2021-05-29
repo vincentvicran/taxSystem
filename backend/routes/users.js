@@ -4,7 +4,7 @@ const router = express.Router();
 
 const userController = require('../controllers/userController');
 // const paymentController = require('../controllers/paymentController');
-const vehicleController = require('../controllers/vehicleController');
+// const vehicleController = require('../controllers/vehicleController');
 // const insuranceController = require('../controllers/userinsuranceController');
 const authController = require('../controllers/authController');
 
@@ -21,10 +21,8 @@ router.use(authController.protect);
 //? UPDATING LOGGED IN USER INFO
 router.patch('/updateme', userController.updateMe);
 router.delete('/deleteme', userController.deleteMe);
+router.get('/me', authController.protect, userController.getMe);
 router.patch('/updatepassword', authController.updatePassword);
-
-//? vehicles
-router.get('/vehicles', vehicleController.getVehicle);
 
 //! ADMIN PRIVILEDGES
 router.use(authController.restrictTo('admin'));
@@ -40,6 +38,6 @@ router
     .patch(userController.updateUser)
     .delete(userController.deleteUser);
 
-router.route('/admin').post(userController.addAdmin);
+// router.route('/addAdmin').post(authController.addAdmin);
 
 module.exports = router;

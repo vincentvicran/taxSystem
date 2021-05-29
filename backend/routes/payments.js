@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 const paymentController = require('../controllers/paymentController');
 const authController = require('../controllers/authController');
@@ -35,6 +35,8 @@ const uploadOptions = multer({ storage: storage });
 
 router.use(authController.protect);
 
+router.route(`/`).get(paymentController.getAllUserPayments);
+
 router.route('/:id').get(paymentController.getPayment);
 
 router.post(
@@ -47,13 +49,13 @@ router.post(
 router.use(authController.restrictTo('admin'));
 
 router
-    .route(`/`)
+    .route(`/admin/`)
     .get(paymentController.getAllPayments)
-    .post(paymentController.createPayment);
+    .post(paymentController.addPayment);
 
 router
     .route('/:id')
-    .post(uploadOptions.single('voucherImage'), paymentController.createPayment)
+    .post(uploadOptions.single('voucherImage'), paymentController.addPayment)
     .patch(paymentController.updatePayment)
     .delete(paymentController.deletePayment);
 

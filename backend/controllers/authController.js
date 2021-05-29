@@ -234,6 +234,25 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
     createSendToken(user, 200, res);
 });
 
+exports.addAdmin = catchAsync(async (req, res, next) => {
+    const user = await User.create({
+        userName: req.body.userName,
+        userEmail: req.body.userEmail,
+        userDOB: req.body.userDOB,
+        userAddress: req.body.userAddress,
+        userContact: req.body.userContact,
+        userPassword: req.body.userPassword,
+        passwordConfirm: req.body.passwordConfirm,
+        role: 'admin',
+    });
+
+    if (!user) {
+        next(new AppError('Admin could not be created!', 404));
+    }
+
+    createSendToken(user, 201, res);
+});
+
 exports.logout = (req, res) => {
     res.cookie('jwt', 'loggedout', {
         expires: new Date(Date.now() + 10 * 1000),

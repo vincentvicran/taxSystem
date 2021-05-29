@@ -2,7 +2,7 @@ const User = require('../models/user');
 const AppError = require('../helpers/appError');
 const catchAsync = require('../helpers/catchAsync');
 const factory = require('./handlerFactory');
-const authController = require('./authController');
+// const authController = require('./authController');
 
 const filterObj = (obj, ...allowedFields) => {
     const newObj = {};
@@ -31,21 +31,6 @@ exports.getUser = catchAsync(async (req, res, next) => {
     }
 
     res.status(200).send(user);
-});
-
-exports.addAdmin = catchAsync(async (req, res, next) => {
-    const user = await User.Create({
-        userName: req.body.userName,
-        userEmail: req.body.userEmail,
-        userDOB: req.body.userDOB,
-        userAddress: req.body.userAddress,
-        userContact: req.body.userContact,
-        userPassword: req.body.userPassword,
-        // userPasswordChangedAt: req.body.userPasswordChangedAt,
-        role: 'admin',
-    });
-
-    authController.createSendToken(user, 201, res);
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
@@ -117,12 +102,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.getMe = catchAsync(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user.id);
+    const user = await User.findById(req.user.id);
 
     res.status(200).json({
         status: 'success',
-        data: null,
-        message: 'The user is deleted!',
+        data: user,
     });
 });
 

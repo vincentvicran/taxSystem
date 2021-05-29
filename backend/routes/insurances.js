@@ -1,20 +1,26 @@
 const express = require('express');
 
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 
 const insuranceController = require('../controllers/insuranceController');
 const authController = require('../controllers/authController');
 
 router.use(authController.protect);
 
-router.route(`/`).post(insuranceController.addInsurance);
+router
+    .route(`/`)
+    .get(insuranceController.getAllUserInsurance)
+    .post(insuranceController.addInsurance);
 
-router.route(`/:userId`).get(insuranceController.getUserInsurance);
+router.route(`/:id`).get(insuranceController.getUserInsurance);
 
 //! ADMIN PRIVILEDGES
 router.use(authController.restrictTo('admin'));
 
-router.route(`/`).get(insuranceController.getAllInsurance);
+router
+    .route(`/`)
+    .get(insuranceController.getAllInsurance)
+    .post(insuranceController.createInsurance);
 
 router
     .route('/:id')
