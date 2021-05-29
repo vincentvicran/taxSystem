@@ -35,6 +35,8 @@ const uploadOptions = multer({ storage: storage });
 
 router.use(authController.protect);
 
+router.route(`/`).get(paymentController.getAllUserPayments);
+
 router.route('/:id').get(paymentController.getPayment);
 
 router.post(
@@ -47,7 +49,7 @@ router.post(
 router.use(authController.restrictTo('admin'));
 
 router
-    .route(`/`)
+    .route(`/admin/`)
     .get(paymentController.getAllPayments)
     .post(paymentController.createPayment);
 

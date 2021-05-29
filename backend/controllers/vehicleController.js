@@ -5,6 +5,16 @@ const factory = require('./handlerFactory');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
+exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
+    const vehicleList = await Vehicle.find({
+        uploadedBy: req.user.id,
+    }).populate({
+        path: 'uploadedBy',
+        select: 'userName',
+    });
+    res.send(vehicleList);
+});
+
 exports.getAllVehicles = catchAsync(async (req, res, next) => {
     const vehicleList = await Vehicle.find().populate({
         path: 'uploadedBy',
@@ -13,18 +23,22 @@ exports.getAllVehicles = catchAsync(async (req, res, next) => {
     res.send(vehicleList);
 });
 
-exports.getVehicle = catchAsync(async (req, res, next) => {
-    const vehicle = await Vehicle.findById(req.params.id).populate(
-        'uploadedBy',
-        'userName'
-    );
-
-    if (!vehicle) {
-        return next(new AppError('No vehicle found with that ID', 404));
-    }
-
-    res.status(200).send(vehicle);
+exports.getVehicle = factory.getOne(Vehicle, {
+    path: 'uploadedBy',
+    select: 'username',
 });
+//  = catchAsync(async (req, res, next) => {
+//     const vehicle = await Vehicle.findById(req.params.id).populate(
+//         'uploadedBy',
+//         'userName'
+//     );
+
+//     if (!vehicle) {
+//         return next(new AppError('No vehicle found with that ID', 404));
+//     }
+
+//     res.status(200).send(vehicle);
+// });
 
 exports.addVehicle = catchAsync(async (req, res, next) => {
     let vehicle = new Vehicle({

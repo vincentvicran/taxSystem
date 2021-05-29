@@ -1,6 +1,54 @@
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
+exports.getAll = (Model, popOptions) =>
+    catchAsync(async (req, res, next) => {
+        let query = Model.find({}, { projection: { uploadedBy: req.user.id } });
+
+        if (popOptions) query = query.populate(popOptions);
+
+        const doc = await query;
+
+        // const doc = await Model.findById(req.params.id);
+
+        if (!doc)
+            return next(
+                new AppError('The requested document could not be found!', 404)
+            );
+
+        res.status(200).json({
+            status: 'success',
+            message: `The requested document found!`,
+            data: {
+                data: doc,
+            },
+        });
+    });
+
+exports.getOne = (Model, popOptions) =>
+    catchAsync(async (req, res, next) => {
+        let query = Model.findById(req.params.id);
+
+        if (popOptions) query = query.populate(popOptions);
+
+        const doc = await query;
+
+        // const doc = await Model.findById(req.params.id);
+
+        if (!doc)
+            return next(
+                new AppError('The requested document could not be found!', 404)
+            );
+
+        res.status(200).json({
+            status: 'success',
+            message: `The requested document found!`,
+            data: {
+                data: doc,
+            },
+        });
+    });
+
 exports.createOne = (Model) =>
     catchAsync(async (req, res, next) => {
         const doc = await Model.create();

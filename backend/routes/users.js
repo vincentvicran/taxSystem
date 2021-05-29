@@ -21,6 +21,7 @@ router.use(authController.protect);
 //? UPDATING LOGGED IN USER INFO
 router.patch('/updateme', userController.updateMe);
 router.delete('/deleteme', userController.deleteMe);
+router.get('/me', authController.protect, userController.getMe);
 router.patch('/updatepassword', authController.updatePassword);
 
 //? vehicles

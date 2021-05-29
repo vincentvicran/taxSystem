@@ -117,12 +117,11 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.getMe = catchAsync(async (req, res, next) => {
-    await User.findByIdAndUpdate(req.user.id);
+    const user = await User.findById(req.user.id);
 
     res.status(200).json({
         status: 'success',
-        data: null,
-        message: 'The user is deleted!',
+        data: user,
     });
 });
 
