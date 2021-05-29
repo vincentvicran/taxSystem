@@ -1,100 +1,92 @@
-const {Vehicle} = require('../models/vehicle');
 const express = require('express');
+// const multer = require('multer');
+
 const router = express.Router();
 
+const vehicleController = require('../controllers/vehicleController');
+const authController = require('../controllers/authController');
+<<<<<<< HEAD
+// const insuranceController = require('../controllers/insuranceController');
+// const paymentController = require('../controllers/paymentController');
+const factory = require('../controllers/handlerFactory');
 
-//* get request response
-//?for all vehicles
-router.get(`/`, async (req, res) =>{
-    const vehicleList = await Vehicle.find();
-    res.send(vehicleList);
-})
+const paymentsRoutes = require('./payments');
+const insurancesRoutes = require('./insurances');
 
-//?for specific vehicle
-router.get(`/:id`, async (req, res) => {
-    const vehicle = await Vehicle.findById(req.params.id);
+// //* image upload
+// const FILE_TYPE_MAP = {
+//     'image/png': 'png',
+//     'image/jpeg': 'jpeg',
+//     'image/jpg': 'jpg',
+// };
 
-    if(!vehicle) {
-        res.status(500).json({message: 'The vehicle is not found!'});
-    }
+// const storage = multer.diskStorage({
+//     destination: function (req, file, cb) {
+//         const isValid = FILE_TYPE_MAP[file.mimetype];
 
-    res.status(200).send(vehicle);
-})
+//         let uploadError = new Error('Invalid image type!!!');
 
+//         if (isValid) {
+//             uploadError = null;
+//         }
+//         cb(uploadError, 'public/uploads');
+//     },
+//     filename: function (req, file, cb) {
+//         const fileName = file.originalname.split(' ').join('-');
+//         const extension = FILE_TYPE_MAP[file.mimetype];
+//         cb(null, `${fileName}-${Date.now()}.${extension}`);
+//     },
+// });
 
-//* post request response
-router.post(`/`, async (req, res) =>{
-    let vehicle = new Vehicle({
-        vehicleId: req.body.vehicleId,
-        ownerName: req.body.ownerName,
-        vehicleRegistrationDate: req.body.vehicleRegistrationDate,
-        vehicleType: req.body.vehicleType,
-        vehicleNumber: req.body.vehicleNumber,
-        engineCapacity: req.body.engineCapacity,
-        latestPaymentDate: req.body.latestPaymentDate   
-    });
-    
-    vehicle = await vehicle.save();
+// const uploadOptions = multer({ storage: storage });
+=======
+const insuranceController = require('../controllers/insuranceController');
+// const factory = require('../controllers/handlerFactory');
+>>>>>>> 3f5bec6ff37506710c7e9671b74ae43279c80359
 
-    if(!vehicle)
-        return res.status(500).json({
-            error: err,
-            success: false,
-            message: 'The vehicle cannot be created!'
-        });
+router.use(authController.protect);
 
-    res.send(vehicle);
-})
+router.use(`/:vehicleId/payments`, paymentsRoutes);
+router.use(`/:vehicleId/insurances`, insurancesRoutes);
 
+router.route('/').post(vehicleController.addVehicle);
 
-//* update
-router.put(`/:id`, async (req, res)=>{
-    const vehicle = await Vehicle.findByIdAndUpdate(
-        req.params.id,
-        {
-            vehicleId: req.body.vehicleId,
-            ownerName: req.body.ownerName,
-            vehicleRegistrationDate: req.body.vehicleRegistrationDate,
-            vehicleType: req.body.vehicleType,
-            vehicleNumber: req.body.vehicleNumber,
-            engineCapacity: req.body.engineCapacity,
-            latestPaymentDate: req.body.latestPaymentDate   
-        },
-        {
-            new: true
-        }
-    );
+<<<<<<< HEAD
+router.route('/').get(vehicleController.getAllUserVehicles, factory.getAll);
+=======
+router.route('/').get(vehicleController.getAllUserVehicles);
+>>>>>>> 3f5bec6ff37506710c7e9671b74ae43279c80359
 
-    if(!vehicle)
-        return res.status(404).send('The vehicle cannot be created!');
+router
+    .route('/:id')
+    .get(vehicleController.getVehicle)
+    .patch(vehicleController.updateVehicle);
 
-    res.send(vehicle); 
-})
+<<<<<<< HEAD
+// router.route(`/:vehicleId/insurances`).post(insuranceController.addInsurance);
+// router
+//     .route(`/:vehicleId/payments`)
+//     .post(uploadOptions.single('voucherImage'), paymentController.addPayment);
+=======
+router
+    .route(`/:vehicleId/insurances`)
+    .get(insuranceController.getUserInsurance);
+>>>>>>> 3f5bec6ff37506710c7e9671b74ae43279c80359
 
+//! ADMIN PRIVILEDGES
+router.use(authController.restrictTo('admin'));
 
-//* delete request and response
-router.delete(`/:id`, (req, res) => {
-    Vehicle.findByIdAndRemove(req.params.id).then(Vehicle => {
-        if(Vehicle){
-            return res.status(200).json({success: true, message: 'The vehicle is deleted!'});
-        }
-        else{
-            return res.status(404).json({success: false, message: 'The vehicle is not found!'});
-        }
-    }).catch(err=>{
-        return res.status(400).json({success: false, error: err});
-    })
-})
+router
+    .route('/')
+    .get(vehicleController.getAllVehicles)
+    .post(vehicleController.createVehicle);
+router
+    .route('/:id')
+    .patch(vehicleController.updateVehicles)
+    .delete(vehicleController.deleteVehicle);
 
-router.get(`/get/count`, async (req, res) =>{
-    const vehicleCount = await Vehicle.countDocuments((count) => count)
-
-    if(!vehicleCount) {
-        res.status(500).json({success: false});
-    } 
-    res.send({
-        vehicleCount: vehicleCount
-    });
-})
+// router
+//     .route(`/:vehicleId/insurances`)
+//     .get(authController.protect, insuranceController.getVehicleInsurances);
 
 module.exports = router;

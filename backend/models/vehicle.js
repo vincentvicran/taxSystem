@@ -1,37 +1,63 @@
 const mongoose = require('mongoose');
+// const Insurance = require('./insurance');
 
-const vehicleSchema = mongoose.Schema({
-    vehicleId: String,
+const vehicleSchema = mongoose.Schema(
+    {
+        // vehicleId: String,
 
-    ownerName: {
-        type: String,
-        required: true
+        ownerName: {
+            type: String,
+            required: true,
+        },
+
+        vehicleRegistrationDate: {
+            type: Date,
+            required: true,
+        },
+
+        vehicleType: {
+            type: String,
+            required: true,
+            enum: ['TwoWheeler', 'FourWheeler'],
+            default: 'TwoWheeler',
+        },
+
+        vehicleNumber: {
+            type: String,
+            required: true,
+        },
+
+        engineCapacity: {
+            type: String,
+            required: true,
+        },
+
+        latestPaymentDate: {
+            type: Date,
+            required: true,
+        },
+
+        uploadedBy: {
+            type: mongoose.Schema.ObjectId,
+            ref: 'User',
+            required: true,
+        },
+
+        // insurance: Array,
     },
-    
-    vehicleRegistrationDate: {
-        type: Date,
-        required: true
-    },
+    { timestamps: true }
+);
 
-    vehicleType: {
-        type: String,
-        required: true
-    },
+// vehicleSchema.pre('save', async function (next) {
+//     const insurancePromise = this.insurance.map(
+//         async (id) => await Insurance.findById(id)
+//     );
 
-    vehicleNumber: {
-        type: String,
-        required: true
-    },
+//     this.insurance = await Promise.all(insurancePromise);
 
-    engineCapacity: {
-        type: String,
-        required: true
-    },
+//     next();
+// });
 
-    latestPaymentDate: {
-        type: Date,
-        required: true
-    }
-}, {timestamps: true});
+const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 
-exports.Vehicle = mongoose.model('Vehicle', vehicleSchema);
+module.exports = Vehicle;

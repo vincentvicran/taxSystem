@@ -1,97 +1,62 @@
-const {Payment} = require('../models/payment');
-const {User} = require('../models/user');
-const {Vehicle} = require('../models/vehicle');
 const express = require('express');
-const router = express.Router();
 const multer = require('multer');
 
-const FILE_TYPE_MAP = { 
-    'image/png' : 'png',
-    'image/jpeg' : 'jpeg',
-    'image/jpg' : 'jpg'
-}
+const router = express.Router({ mergeParams: true });
 
+const paymentController = require('../controllers/paymentController');
+const authController = require('../controllers/authController');
 
 //* image upload
+const FILE_TYPE_MAP = {
+    'image/png': 'png',
+    'image/jpeg': 'jpeg',
+    'image/jpg': 'jpg',
+};
+
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
         const isValid = FILE_TYPE_MAP[file.mimetype];
 
         let uploadError = new Error('Invalid image type!!!');
 
-        if(isValid) {
-            uploadError = null
+        if (isValid) {
+            uploadError = null;
         }
-        cb(uploadError, 'public/uploads')
+        cb(uploadError, 'public/uploads');
     },
     filename: function (req, file, cb) {
         const fileName = file.originalname.split(' ').join('-');
         const extension = FILE_TYPE_MAP[file.mimetype];
-        cb(null, `${fileName}-${Date.now()}.${extension}`)
-    }
-  })
-  
-const uploadOptions = multer({ storage: storage })
+        cb(null, `${fileName}-${Date.now()}.${extension}`);
+    },
+});
 
-//* get request response
-router.get(`/`, async (req, res) =>{
-    const paymentList = await Payment.find()
-        .populate('userName', 'userName')
-        .populate('ownerName', 'ownerName')
-        .populate('vehicleNumber', 'vehicleNumber');
-    res.send(paymentList);
-})
+const uploadOptions = multer({ storage: storage });
 
-router.get(`/:id`, async (req, res) =>{
-    const payment = await Payment.findById(req.params.id)
-        .populate('userName', 'userName')
-        .populate('ownerName', 'ownerName')
-        .populate('vehicleNumber', 'vehicleNumber');
-    res.send(payment);
-})
+router.use(authController.protect);
 
+router.route(`/`).get(paymentController.getAllUserPayments);
 
-//* post request response
-router.post(`/`, uploadOptions.single('voucherImage'), async (req, res) =>{
+router.route('/:id').get(paymentController.getPayment);
 
-    const file = req.file;
-    if(!file) return res.status(400).send('No image in the request')
+router.post(
+    `/`,
+    uploadOptions.single('voucherImage'),
+    paymentController.addPayment
+);
 
-    const fileName = file.filename
-    const basePath = `${req.protocol}://${req.get('host')}/public/uploads/`;
+//! ADMIN PRIVILEDGES
+router.use(authController.restrictTo('admin'));
 
-    const userName = (await User.findById(req.body.userName).populate('User').select('userName'));
-    const ownerName = (await Vehicle.findById(req.body.ownerName).populate('Vehicle').select('ownerName'));
-    const vehicleNumber = (await Vehicle.findById(req.body.vehicleNumber).populate('Vehicle').select('vehicleNumber'));
+router
+    .route(`/admin/`)
+    .get(paymentController.getAllPayments)
+    .post(paymentController.addPayment);
 
-    let payment = new Payment({
-        paymentId: req.body.paymentId,
-        userName: userName,
-        ownerName: ownerName,
-        vehicleNumber: vehicleNumber,
-        paymentAmount: req.body.paymentAmount,
-        voucherImage: `${basePath}${fileName}`,
-        paymentDate: req.body.paymentDate
-    });
-
-    
-    payment = await payment.save();
-
-    if(!payment) 
-        return res.status(500).send('The payment cannot be issued!')
-
-    res.send(payment);
-})
-
-router.get(`/get/count`, async (req, res) =>{
-    const paymentCount = await Payment.countDocuments((count) => count)
-
-    if(!paymentCount) {
-        res.status(500).json({success: false});
-    } 
-    res.send({
-        paymentCount: paymentCount
-    });
-})
+router
+    .route('/:id')
+    .post(uploadOptions.single('voucherImage'), paymentController.addPayment)
+    .patch(paymentController.updatePayment)
+    .delete(paymentController.deletePayment);
 
 module.exports = router;
