@@ -49,7 +49,7 @@ router.post(
 router.use(authController.restrictTo('admin'));
 
 router
-    .route(`/admin/`)
+    .route(`/`)
     .get(paymentController.getAllPayments)
     .post(paymentController.addPayment);
 

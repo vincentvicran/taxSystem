@@ -27,8 +27,6 @@ exports.getVehicle = factory.getOne(Vehicle, {
     path: 'uploadedBy',
     select: 'username',
 });
-<<<<<<< HEAD
-=======
 //  = catchAsync(async (req, res, next) => {
 //     const vehicle = await Vehicle.findById(req.params.id).populate(
 //         'uploadedBy',
@@ -41,7 +39,6 @@ exports.getVehicle = factory.getOne(Vehicle, {
 
 //     res.status(200).send(vehicle);
 // });
->>>>>>> 3f5bec6ff37506710c7e9671b74ae43279c80359
 
 exports.addVehicle = catchAsync(async (req, res, next) => {
     let vehicle = new Vehicle({
