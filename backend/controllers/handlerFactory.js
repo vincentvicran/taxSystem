@@ -18,6 +18,7 @@ exports.getAll = (Model, popOptions) =>
 
         res.status(200).json({
             status: 'success',
+            results: doc.length,
             message: `The requested document found!`,
             data: {
                 data: doc,
@@ -61,7 +62,7 @@ exports.createOne = (Model) =>
                 )
             );
 
-        res.status(200).json({
+        res.status(201).json({
             status: 'success',
             message: `The requested document is created!`,
             data: {

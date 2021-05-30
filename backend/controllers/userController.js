@@ -14,7 +14,7 @@ const filterObj = (obj, ...allowedFields) => {
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
     const userList = await User.find();
-    res.status(201).json({
+    res.status(200).json({
         status: 'success',
         results: userList.length,
         data: {
@@ -30,7 +30,12 @@ exports.getUser = catchAsync(async (req, res, next) => {
         return next(new AppError('No user found with that ID', 404));
     }
 
-    res.status(200).send(user);
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user,
+        },
+    });
 });
 
 exports.updateUser = catchAsync(async (req, res, next) => {
@@ -62,7 +67,12 @@ exports.updateUser = catchAsync(async (req, res, next) => {
         return next(new AppError('No user found with that ID', 404));
     }
 
-    res.send(user);
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user,
+        },
+    });
 });
 
 //! updating userfields by logged in user
@@ -96,7 +106,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         data: {
-            user: updatedUser,
+            updatedUser,
         },
     });
 });

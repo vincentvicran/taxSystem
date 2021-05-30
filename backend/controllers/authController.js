@@ -222,7 +222,7 @@ exports.updatePassword = catchAsync(async (req, res, next) => {
             user.userPassword
         ))
     ) {
-        return next(new AppError('your current password is wrong!', 401));
+        return next(new AppError('Your current password is wrong!', 401));
     }
 
     //* 3. if so, update password

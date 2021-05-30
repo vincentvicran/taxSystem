@@ -12,7 +12,13 @@ exports.getAllUserInsurance = catchAsync(async (req, res, next) => {
         return next(new AppError('No insurances found!', 404));
     }
 
-    res.send(insuranceList);
+    res.status(200).json({
+        status: 'success',
+        results: insuranceList.length,
+        data: {
+            insuranceList,
+        },
+    });
 });
 
 exports.getAllInsurance = catchAsync(async (req, res, next) => {
@@ -24,7 +30,13 @@ exports.getAllInsurance = catchAsync(async (req, res, next) => {
         return next(new AppError('No insurances found!', 404));
     }
 
-    res.send(insuranceList);
+    res.status(200).json({
+        status: 'success',
+        results: insuranceList.length,
+        data: {
+            insuranceList,
+        },
+    });
 });
 
 exports.getUserInsurance = catchAsync(async (req, res, next) => {
@@ -38,7 +50,10 @@ exports.getUserInsurance = catchAsync(async (req, res, next) => {
         return next(new AppError('No insurances found!', 404));
     }
 
-    res.send(insuranceList);
+    res.status(200).json({
+        status: 'success',
+        data: insuranceList,
+    });
 });
 
 exports.addInsurance = catchAsync(async (req, res, next) => {
@@ -53,7 +68,13 @@ exports.addInsurance = catchAsync(async (req, res, next) => {
         return next(new AppError('No insurances found!', 404));
     }
 
-    res.send(insurance);
+    res.status(201).json({
+        status: 'success',
+        results: insurance.length,
+        data: {
+            insurance,
+        },
+    });
 });
 
 exports.createInsurance = factory.createOne(Insurance);
