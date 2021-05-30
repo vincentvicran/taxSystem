@@ -16,7 +16,13 @@ exports.getAllUserPayments = catchAsync(async (req, res, next) => {
         return next(new AppError('No payments found!', 404));
     }
 
-    res.send(paymentList);
+    res.status(200).json({
+        status: 'success',
+        results: paymentList.length,
+        data: {
+            paymentList,
+        },
+    });
 });
 
 exports.getAllPayments = catchAsync(async (req, res, next) => {
@@ -31,7 +37,13 @@ exports.getAllPayments = catchAsync(async (req, res, next) => {
         return next(new AppError('No payments found!', 404));
     }
 
-    res.send(paymentList);
+    res.status(200).json({
+        status: 'success',
+        results: paymentList.length,
+        data: {
+            paymentList,
+        },
+    });
 });
 
 exports.getPayment = catchAsync(async (req, res, next) => {
@@ -46,7 +58,10 @@ exports.getPayment = catchAsync(async (req, res, next) => {
         return next(new AppError('No payment found with that id!', 404));
     }
 
-    res.send(payment);
+    res.status(200).send({
+        status: 'success',
+        data: payment,
+    });
 });
 
 exports.addPayment = catchAsync(async (req, res, next) => {
@@ -70,7 +85,10 @@ exports.addPayment = catchAsync(async (req, res, next) => {
         return next(new AppError('The payment cannot be issued!', 500));
     }
 
-    res.send(payment);
+    res.status(201).json({
+        status: 'success',
+        data: payment,
+    });
 });
 
 exports.updatePayment = factory.updateOne(Payment);

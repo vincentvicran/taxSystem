@@ -12,7 +12,13 @@ exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
         path: 'uploadedBy',
         select: 'userName',
     });
-    res.send(vehicleList);
+    res.status(200).json({
+        status: 'success',
+        results: vehicleList.length,
+        data: {
+            vehicleList,
+        },
+    });
 });
 
 exports.getAllVehicles = catchAsync(async (req, res, next) => {
@@ -20,15 +26,19 @@ exports.getAllVehicles = catchAsync(async (req, res, next) => {
         path: 'uploadedBy',
         select: 'userName',
     });
-    res.send(vehicleList);
+    res.status(200).json({
+        status: 'success',
+        results: vehicleList.length,
+        data: {
+            vehicleList,
+        },
+    });
 });
 
 exports.getVehicle = factory.getOne(Vehicle, {
     path: 'uploadedBy',
-    select: 'username',
+    select: 'userName',
 });
-<<<<<<< HEAD
-=======
 //  = catchAsync(async (req, res, next) => {
 //     const vehicle = await Vehicle.findById(req.params.id).populate(
 //         'uploadedBy',
@@ -41,7 +51,6 @@ exports.getVehicle = factory.getOne(Vehicle, {
 
 //     res.status(200).send(vehicle);
 // });
->>>>>>> 3f5bec6ff37506710c7e9671b74ae43279c80359
 
 exports.addVehicle = catchAsync(async (req, res, next) => {
     let vehicle = new Vehicle({
@@ -60,7 +69,10 @@ exports.addVehicle = catchAsync(async (req, res, next) => {
         return next(new AppError('No vehicle found with that ID', 404));
     }
 
-    res.send(vehicle);
+    res.status(201).send({
+        status: 'success',
+        data: vehicle,
+    });
 });
 
 exports.updateVehicle = catchAsync(async (req, res, next) => {
@@ -84,7 +96,7 @@ exports.updateVehicle = catchAsync(async (req, res, next) => {
         return next(new AppError('No vehicle found with that ID', 404));
     }
 
-    res.send(vehicle);
+    res.status(200).json({ status: 'success', data: vehicle });
 });
 
 exports.createVehicle = factory.createOne(Vehicle);

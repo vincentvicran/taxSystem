@@ -3,11 +3,7 @@ const AppError = require('../helpers/appError');
 
 exports.getAll = (Model, popOptions) =>
     catchAsync(async (req, res, next) => {
-<<<<<<< HEAD
         let query = Model.find();
-=======
-        let query = Model.find({}, { projection: { uploadedBy: req.user.id } });
->>>>>>> 3f5bec6ff37506710c7e9671b74ae43279c80359
 
         if (popOptions) query = query.populate(popOptions);
 
@@ -22,6 +18,7 @@ exports.getAll = (Model, popOptions) =>
 
         res.status(200).json({
             status: 'success',
+            results: doc.length,
             message: `The requested document found!`,
             data: {
                 data: doc,
@@ -65,7 +62,7 @@ exports.createOne = (Model) =>
                 )
             );
 
-        res.status(200).json({
+        res.status(201).json({
             status: 'success',
             message: `The requested document is created!`,
             data: {
