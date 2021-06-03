@@ -5,6 +5,12 @@ const factory = require('./handlerFactory');
 const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
+function addDays(date, days) {
+    var result = new Date(date);
+    result.setDate(result.getDate() + days);
+    return result;
+}
+
 exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
     const vehicleList = await Vehicle.find({
         uploadedBy: req.user.id,
@@ -53,6 +59,8 @@ exports.getVehicle = factory.getOne(Vehicle, {
 // });
 
 exports.addVehicle = catchAsync(async (req, res, next) => {
+    // date = req.body.latestPaymentDate;
+    // console.log(date);
     let vehicle = new Vehicle({
         ownerName: req.body.ownerName,
         vehicleRegistrationDate: req.body.vehicleRegistrationDate,
@@ -60,6 +68,7 @@ exports.addVehicle = catchAsync(async (req, res, next) => {
         vehicleNumber: req.body.vehicleNumber,
         engineCapacity: req.body.engineCapacity,
         latestPaymentDate: req.body.latestPaymentDate,
+        expiryDate: addDays(req.body.latestPaymentDate, 365),
         uploadedBy: req.user.id,
     });
 
@@ -85,6 +94,7 @@ exports.updateVehicle = catchAsync(async (req, res, next) => {
             vehicleNumber: req.body.vehicleNumber,
             engineCapacity: req.body.engineCapacity,
             latestPaymentDate: req.body.latestPaymentDate,
+            expiryDate: addDays(req.body.latestPaymentDate, 365),
             // uploadedBy: req.user.id,
         },
         {

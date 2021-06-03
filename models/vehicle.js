@@ -24,6 +24,7 @@ const vehicleSchema = mongoose.Schema(
 
         vehicleNumber: {
             type: String,
+            unique: true,
             required: true,
         },
 
@@ -33,6 +34,11 @@ const vehicleSchema = mongoose.Schema(
         },
 
         latestPaymentDate: {
+            type: Date,
+            required: true,
+        },
+
+        expiryDate: {
             type: Date,
             required: true,
         },
@@ -47,16 +53,6 @@ const vehicleSchema = mongoose.Schema(
     },
     { timestamps: true }
 );
-
-// vehicleSchema.pre('save', async function (next) {
-//     const insurancePromise = this.insurance.map(
-//         async (id) => await Insurance.findById(id)
-//     );
-
-//     this.insurance = await Promise.all(insurancePromise);
-
-//     next();
-// });
 
 const Vehicle = mongoose.model('Vehicle', vehicleSchema);
 

@@ -33,7 +33,7 @@ const handleCastErrorDB = (err) => {
 };
 
 const handleDuplicateFieldsDB = (err) => {
-    const value = err.errmsg.match(/(["'])(\\?.)*?\1/)[0];
+    const value = err.message.match(/(["'])(\\?.)*?\1/)[0];
     console.log(value);
 
     const message = `Duplicate field value; ${value}. Please use another value!`;
@@ -60,10 +60,13 @@ module.exports = (err, req, res, next) => {
     err.statusCode = err.statusCode || 500;
     err.status = err.status || 'error';
 
+    //! for development
     if (process.env.NODE_ENV === 'development') {
         sendErrorDev(err, res);
-    } else if (process.env.NODE_ENV === 'production') {
-        let error = { ...err };
+    }
+    //! for production
+    else if (process.env.NODE_ENV === 'production') {
+        let error = err;
 
         if (error.name === 'CastError') error = handleCastErrorDB(error);
         if (error.code === 11000) error = handleDuplicateFieldsDB(error);
@@ -71,6 +74,7 @@ module.exports = (err, req, res, next) => {
             error = handleValidationErrorDB(error);
         if (error.name === 'JsonWebTokenError') error = handleJWTError();
         if (error.name === 'TokenExpiredError') error = handleJWTExpiredError();
-        sendErrorProd(err, res);
+
+        sendErrorProd(error, res);
     }
 };

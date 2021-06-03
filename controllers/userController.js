@@ -134,8 +134,6 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
 
 exports.createUser = factory.createOne(User);
 
-exports.updateUsers = factory.createOne(User);
-
 exports.deleteUser = factory.deleteOne(User);
 
 // exports.deleteUser = catchAsync(async (req, res, next) => {
