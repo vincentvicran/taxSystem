@@ -9,15 +9,15 @@ const sendErrorDev = (err, res) => {
     });
 };
 
-const sendErrorProd = (err, res) => {
+const sendErrorProd = (error, res) => {
     //* Operational, trusted error: sent to client
-    if (err.isOperational) {
-        res.status(err.statusCode).json({
-            status: err.status,
-            message: err.message,
+    if (error.isOperational) {
+        res.status(error.statusCode).json({
+            status: error.status,
+            message: error.message,
         });
     } else {
-        console.error('ERROR 🛠', err);
+        console.error('ERROR 🛠', error);
 
         //* Programming or other unknown error: dont leak error details
         res.status(500).json({

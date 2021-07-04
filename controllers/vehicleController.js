@@ -6,13 +6,13 @@ const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
 function addDays(date, days) {
-    var result = new Date(date);
+    const result = new Date(date);
     result.setDate(result.getDate() + days);
     return result;
 }
 
 exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
-    const vehicleList = await Vehicle.find({
+    const vehicles = await Vehicle.find({
         uploadedBy: req.user.id,
     }).populate({
         path: 'uploadedBy',
@@ -20,23 +20,23 @@ exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
     });
     res.status(200).json({
         status: 'success',
-        results: vehicleList.length,
+        results: vehicles.length,
         data: {
-            vehicleList,
+            vehicles,
         },
     });
 });
 
 exports.getAllVehicles = catchAsync(async (req, res, next) => {
-    const vehicleList = await Vehicle.find().populate({
+    const vehicles = await Vehicle.find().populate({
         path: 'uploadedBy',
         select: 'userName',
     });
     res.status(200).json({
         status: 'success',
-        results: vehicleList.length,
+        results: vehicles.length,
         data: {
-            vehicleList,
+            vehicles,
         },
     });
 });

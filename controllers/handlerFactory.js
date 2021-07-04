@@ -20,9 +20,7 @@ exports.getAll = (Model, popOptions) =>
             status: 'success',
             results: doc.length,
             message: `The requested document found!`,
-            data: {
-                data: doc,
-            },
+            data: doc,
         });
     });
 
@@ -44,9 +42,7 @@ exports.getOne = (Model, popOptions) =>
         res.status(200).json({
             status: 'success',
             message: `The requested document found!`,
-            data: {
-                data: doc,
-            },
+            data: doc,
         });
     });
 
@@ -65,16 +61,15 @@ exports.createOne = (Model) =>
         res.status(201).json({
             status: 'success',
             message: `The requested document is created!`,
-            data: {
-                data: doc,
-            },
+            data: doc,
         });
     });
 
 exports.updateOne = (Model) =>
     catchAsync(async (req, res, next) => {
-        const doc = await Model.findByIdAndUpdate(req.params.id, {
+        const doc = await Model.findByIdAndUpdate(req.params.id, req.body, {
             new: true,
+            runValidators: true,
         });
 
         if (!doc)
@@ -88,9 +83,7 @@ exports.updateOne = (Model) =>
         res.status(200).json({
             status: 'success',
             message: `The requested document is updated!`,
-            data: {
-                data: doc,
-            },
+            data: doc,
         });
     });
 

@@ -33,9 +33,7 @@ const createSendToken = (user, statusCode, res) => {
     res.status(statusCode).json({
         status: 'success',
         token,
-        data: {
-            user,
-        },
+        user
     });
 };
 
@@ -85,6 +83,12 @@ exports.protect = catchAsync(async (req, res, next) => {
         req.headers.authorization.startsWith('Bearer')
     ) {
         token = req.headers.authorization.split(' ')[1];
+    }
+
+    else if (
+        (req.headers.cookie)
+    ) {
+        token = req.headers.cookie.split('=')[1];
     }
 
     if (!token) {
@@ -169,7 +173,7 @@ exports.forgotPassword = catchAsync(async (req, res, next) => {
             status: 'success',
             message: 'Token sent to email!',
         });
-    } catch (err) {
+    } catch (error) {
         user.passwordResetToken = undefined;
         user.passwordResetExpiry = undefined;
         await user.save({ validateBeforeSave: false });

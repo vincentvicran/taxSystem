@@ -13,13 +13,13 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-    const userList = await User.find();
+    const users = await User.find();
     res.status(200).json({
         status: 'success',
-        results: userList.length,
-        data: {
-            userList,
-        },
+        results: users.length,
+
+            users,
+
     });
 });
 
@@ -32,9 +32,9 @@ exports.getUser = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: 'success',
-        data: {
+
             user,
-        },
+
     });
 });
 
@@ -60,6 +60,7 @@ exports.updateUser = catchAsync(async (req, res, next) => {
         },
         {
             new: true,
+            useFindAndModify: false
         }
     );
 
@@ -68,10 +69,8 @@ exports.updateUser = catchAsync(async (req, res, next) => {
     }
 
     res.status(200).json({
-        status: 'success',
-        data: {
-            user,
-        },
+        success:true
+
     });
 });
 
@@ -92,22 +91,22 @@ exports.updateMe = catchAsync(async (req, res, next) => {
         req.body,
         'userName',
         'userEmail',
-        'userContact'
+        'userContact',
+        'userAddress'
     );
-    const updatedUser = await User.findByIdAndUpdate(
+    const user = await User.findByIdAndUpdate(
         req.user.id,
         filteredBody,
         {
             new: true,
             runValidators: true,
+            useFindAndModify: false
+
         }
     );
 
     res.status(200).json({
-        status: 'success',
-        data: {
-            updatedUser,
-        },
+        success: true
     });
 });
 
@@ -116,7 +115,7 @@ exports.getMe = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: 'success',
-        data: user,
+        user,
     });
 });
 
