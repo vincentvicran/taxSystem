@@ -21,9 +21,8 @@ exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         results: vehicles.length,
-        data: {
             vehicles,
-        },
+
     });
 });
 
@@ -35,9 +34,7 @@ exports.getAllVehicles = catchAsync(async (req, res, next) => {
     res.status(200).json({
         status: 'success',
         results: vehicles.length,
-        data: {
             vehicles,
-        },
     });
 });
 
@@ -80,7 +77,7 @@ exports.addVehicle = catchAsync(async (req, res, next) => {
 
     res.status(201).send({
         status: 'success',
-        data: vehicle,
+        vehicle,
     });
 });
 
@@ -106,7 +103,7 @@ exports.updateVehicle = catchAsync(async (req, res, next) => {
         return next(new AppError('No vehicle found with that ID', 404));
     }
 
-    res.status(200).json({ status: 'success', data: vehicle });
+    res.status(200).json({ status: 'success', vehicle });
 });
 
 exports.createVehicle = factory.createOne(Vehicle);

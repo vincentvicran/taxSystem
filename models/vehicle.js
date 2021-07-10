@@ -18,8 +18,8 @@ const vehicleSchema = mongoose.Schema(
         vehicleType: {
             type: String,
             required: true,
-            enum: ['TwoWheeler', 'FourWheeler'],
-            default: 'TwoWheeler',
+            enum: ['Two Wheeler', 'Four Wheeler'],
+            default: 'Two Wheeler',
         },
 
         vehicleNumber: {
