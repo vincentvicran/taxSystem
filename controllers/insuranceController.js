@@ -4,55 +4,52 @@ const factory = require('./handlerFactory');
 const AppError = require('../helpers/appError');
 
 exports.getAllUserInsurance = catchAsync(async (req, res, next) => {
-    const insuranceList = await Insurance.find({ payor: req.user.id })
+    const insurances = await Insurance.find({ payor: req.user.id })
         .populate('payor', 'userName')
         .populate('vehicle', 'vehicleNumber');
 
-    if (!insuranceList) {
+    if (!insurances) {
         return next(new AppError('No insurances found!', 404));
     }
 
     res.status(200).json({
         status: 'success',
-        results: insuranceList.length,
-        data: {
-            insuranceList,
-        },
+        results: insurances.length,
+        insurances,
     });
 });
 
 exports.getAllInsurance = catchAsync(async (req, res, next) => {
-    const insuranceList = await Insurance.find()
+    const insurances = await Insurance.find()
         .populate('payor', 'userName')
         .populate('vehicle', 'vehicleNumber');
 
-    if (!insuranceList) {
+    if (!insurances) {
         return next(new AppError('No insurances found!', 404));
     }
 
     res.status(200).json({
         status: 'success',
-        results: insuranceList.length,
-        data: {
-            insuranceList,
-        },
+        results: insurances.length,
+        insurances,
     });
 });
 
 exports.getUserInsurance = catchAsync(async (req, res, next) => {
     //* allow nested routes
 
-    const insuranceList = await Insurance.findById(req.params.id)
+    const insurances = await Insurance.findById(req.params.id)
         .populate('payor', 'userName')
         .populate('vehicle', 'vehicleNumber');
 
-    if (!insuranceList) {
+    if (!insurances) {
         return next(new AppError('No insurances found!', 404));
     }
 
     res.status(200).json({
         status: 'success',
-        data: insuranceList,
+        results: insurances.length,
+        insurances,
     });
 });
 
@@ -71,9 +68,7 @@ exports.addInsurance = catchAsync(async (req, res, next) => {
     res.status(201).json({
         status: 'success',
         results: insurance.length,
-        data: {
             insurance,
-        },
     });
 });
 

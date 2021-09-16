@@ -5,44 +5,40 @@ const catchAsync = require('../helpers/catchAsync');
 const AppError = require('../helpers/appError');
 
 exports.getAllUserPayments = catchAsync(async (req, res, next) => {
-    const paymentList = await Payment.find({ payor: req.user.id })
+    const payments = await Payment.find({ payor: req.user.id })
         .populate('payor', 'userName')
         .populate({
             path: 'vehicle',
             select: 'ownerName',
         });
 
-    if (!paymentList) {
+    if (!payments) {
         return next(new AppError('No payments found!', 404));
     }
 
     res.status(200).json({
         status: 'success',
-        results: paymentList.length,
-        data: {
-            paymentList,
-        },
+        results: payments.length,
+            payments,
     });
 });
 
 exports.getAllPayments = catchAsync(async (req, res, next) => {
-    const paymentList = await Payment.find()
+    const payments = await Payment.find()
         .populate('payor', 'userName')
         .populate({
             path: 'vehicle',
             select: 'ownerName vehicleNumber',
         });
 
-    if (!paymentList) {
+    if (!payments) {
         return next(new AppError('No payments found!', 404));
     }
 
     res.status(200).json({
         status: 'success',
-        results: paymentList.length,
-        data: {
-            paymentList,
-        },
+        results: payments.length,
+            payments,
     });
 });
 
@@ -60,7 +56,7 @@ exports.getPayment = catchAsync(async (req, res, next) => {
 
     res.status(200).send({
         status: 'success',
-        data: payment,
+        payment,
     });
 });
 
@@ -87,7 +83,7 @@ exports.addPayment = catchAsync(async (req, res, next) => {
 
     res.status(201).json({
         status: 'success',
-        data: payment,
+        payment,
     });
 });
 

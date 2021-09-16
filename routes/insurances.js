@@ -10,6 +10,9 @@ router.use(authController.protect);
 router
     .route(`/`)
     .get(insuranceController.getAllUserInsurance)
+
+router
+    .route(`/:vehicleId`)
     .post(insuranceController.addInsurance);
 
 router.route(`/:id`).get(insuranceController.getUserInsurance);
