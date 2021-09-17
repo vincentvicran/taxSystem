@@ -40,7 +40,7 @@ router.route(`/`).get(paymentController.getAllUserPayments);
 router.route('/:id').get(paymentController.getPayment);
 
 router.post(
-    `/`,
+    `/:vehicleId`,
     uploadOptions.single('voucherImage'),
     paymentController.addPayment
 );

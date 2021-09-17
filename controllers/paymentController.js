@@ -9,7 +9,7 @@ exports.getAllUserPayments = catchAsync(async (req, res, next) => {
         .populate('payor', 'userName')
         .populate({
             path: 'vehicle',
-            select: 'ownerName',
+            select: 'vehicleNumber',
         });
 
     if (!payments) {

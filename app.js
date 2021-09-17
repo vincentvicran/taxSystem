@@ -7,6 +7,7 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
+const path = require('path');
 
 const app = express();
 
@@ -45,7 +46,7 @@ const limiter = rateLimit({
 app.use('/api', limiter);
 
 //? serving static files
-app.use(express.static(`${__dirname}/public`));
+app.use('/', express.static(path.join(__dirname, `/`)));
 
 //? data sanitization against NoSQL query injection
 app.use(mongoSanitize());
