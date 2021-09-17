@@ -12,7 +12,8 @@ function addDays(date, days) {
 }
 
 exports.getAllUserVehicles = catchAsync(async (req, res, next) => {
-    const vehicles = await Vehicle.find({
+    let resultQuery = Vehicle.find(req.query);
+    const vehicles = await resultQuery.find({
         uploadedBy: req.user.id,
     }).populate({
         path: 'uploadedBy',
