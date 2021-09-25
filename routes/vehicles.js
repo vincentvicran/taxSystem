@@ -53,6 +53,10 @@ router
     .patch(vehicleController.updateVehicle);
 
 // router.use(`/:vehicleId/insurances`, insuranceRoutes);
+router
+    .route('/:id')
+    .patch(vehicleController.updateVehicles)
+    .delete(vehicleController.deleteVehicle);
 
 //! ADMIN PRIVILEDGES
 router.use(authController.restrictTo('admin'));
@@ -61,10 +65,7 @@ router
     .route('/')
     .get(vehicleController.getAllVehicles)
     .post(vehicleController.createVehicle);
-router
-    .route('/:id')
-    .patch(vehicleController.updateVehicles)
-    .delete(vehicleController.deleteVehicle);
+
 
 // router
 //     .route(`/:vehicleId/insurances`)
